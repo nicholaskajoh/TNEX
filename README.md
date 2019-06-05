@@ -1,6 +1,9 @@
 # Autonomous RC Car (WIP)
 An AI agent that can drive an RC car. It employs the same techniques used in real state-of-the-art self-driving cars howbeit with much simpler algorithms and hardware components.
 
+## Vehicle Hardware
+![](self-driving-rc-car-hardware.jpg)
+
 ## Systems
 - Driver (agent)
 - Cartesian (Local Positioning System)
