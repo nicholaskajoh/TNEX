@@ -1,8 +1,8 @@
-# Autonomous RC Car (WIP)
-An AI agent that can drive an RC car. It employs the same techniques used in real state-of-the-art self-driving cars howbeit with much simpler algorithms and hardware components.
+# Autonomous Toy Car (WIP)
+An AI agent that can drive a toy car. It employs the same techniques used in real state-of-the-art self-driving cars howbeit with much simpler algorithms and hardware components.
 
 ## Vehicle Hardware
-![](self-driving-rc-car-hardware.jpg)
+![](self-driving-toy-car-hardware.jpg)
 
 ## Systems
 - Driver (agent)
