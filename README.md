@@ -3,9 +3,3 @@ ATC is an agent that can drive a toy car. It employs the same techniques used in
 
 ## Vehicle Hardware
 ![](self-driving-toy-car-hardware.jpg)
-
-## Systems
-- DanfoDriver (driving agent)
-- Ivy (image-based Local Positioning System)
-- S2Map (simple mapping system of the road networks where ATC will drive)
-- CommandCenter (gives ATC instructions and visualizes what it's doing)
