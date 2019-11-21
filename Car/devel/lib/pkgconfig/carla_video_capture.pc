@@ -1,8 +1,0 @@
-prefix=/home/nicholas/dev/autonomous-rc-car/Car/devel
-
-Name: carla_video_capture
-Description: Description of carla_video_capture
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/nicholas/dev/autonomous-rc-car/Car/devel/lib 
-Requires: 
