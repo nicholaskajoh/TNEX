@@ -100,7 +100,7 @@ def main():
 
             while True:
                 pygame.display.flip()
-                clock.tick(24)
+                clock.tick(30)
         else:
             print('autonomous car and cameras spawned')
             while True:
