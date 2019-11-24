@@ -44,19 +44,23 @@ def carla_video_capture():
     world = client.get_world()
 
     # get camera sensors
-    cam_left = None; cam_right = None
+    cam_left = None; cam_right = None; cam_top = None
     for actor in world.get_actors():
         if actor.attributes.get('role_name') == 'autonomous_car_camera_left':
             cam_left = actor
 
         if actor.attributes.get('role_name') == 'autonomous_car_camera_right':
             cam_right = actor
-    if cam_left is None or cam_right is None:
-        raise Exception('Could not find camera sensors')
+
+        if actor.attributes.get('role_name') == 'autonomous_car_camera_top':
+            cam_top = actor
+    if cam_left is None or cam_right is None or cam_top is None:
+        raise Exception('Could not find one or more camera sensors')
 
 
     cam_left.listen(lambda carla_image: publish(carla_image, 'cam_left'))
     cam_right.listen(lambda carla_image: publish(carla_image, 'cam_right'))
+    cam_top.listen(lambda carla_image: publish(carla_image, 'cam_top'))
 
     print('Streaming video from cameras')
 
