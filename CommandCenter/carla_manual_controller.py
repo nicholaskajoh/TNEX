@@ -45,7 +45,7 @@ def main():
         keys = pygame.key.get_pressed()
 
         if keys[K_UP]:
-            throttle = 1.0
+            throttle = 0.5
         else:
             throttle = 0.0
 
@@ -55,9 +55,9 @@ def main():
             brake = 0.0
 
         if keys[K_LEFT]:
-            steer = -0.5
+            steer = -0.25
         elif keys[K_RIGHT]:
-            steer = 0.5
+            steer = 0.25
         else:
             steer = 0.0
 
