@@ -64,7 +64,7 @@ def carla_vehicle_control():
             if carla_control_message:
                 apply_control(vehicle, carla_control_message)
 
-            time.sleep(0.03)
+            time.sleep(0.0667)
     except KeyboardInterrupt:
         pass
 

@@ -36,7 +36,7 @@ def main():
             if cam_right_message:
                 display_image(cam_right_message, 'Cam right')
 
-            time.sleep(0.03)
+            time.sleep(0.0667)
     except KeyboardInterrupt:
         pass
 

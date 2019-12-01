@@ -37,7 +37,6 @@ def main():
         cam_top_message = cam_top.get_message()
         if cam_top_message and type(cam_top_message['data']) is not int:
             image = pickle.loads(cam_top_message['data'])
-            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
             surface = pygame.surfarray.make_surface(image.swapaxes(0, 1))
             surface = pygame.transform.scale(surface, display_scale)
             display.blit(surface, (0, 0))
@@ -74,8 +73,7 @@ def main():
         display.blit(text, (0, 0))
 
         pygame.display.flip()
-        clock.tick(30)
-
+        clock.tick(15)
 
 if __name__ == '__main__':
     try:

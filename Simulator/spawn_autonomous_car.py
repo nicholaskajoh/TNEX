@@ -54,10 +54,10 @@ def main():
         def create_camera_blueprint(role_name, fov):
             camera_blueprint = blueprint_library.find('sensor.camera.rgb')
             camera_blueprint.set_attribute('role_name', role_name)
-            camera_blueprint.set_attribute('image_size_x', '1920')
-            camera_blueprint.set_attribute('image_size_y', '1080')
+            camera_blueprint.set_attribute('image_size_x', '1280')
+            camera_blueprint.set_attribute('image_size_y', '720')
             camera_blueprint.set_attribute('fov', fov) # sensor field of view
-            camera_blueprint.set_attribute('sensor_tick', '0.0417') # time in seconds between sensor captures
+            camera_blueprint.set_attribute('sensor_tick', '0.0667') # time in seconds between sensor captures
             return camera_blueprint
 
         camera_left_blueprint = create_camera_blueprint('autonomous_car_camera_left', '60')
