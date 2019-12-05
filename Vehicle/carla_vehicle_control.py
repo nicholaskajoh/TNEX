@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+'''
+Apply vehicle commands sent to carla_control channel.
+'''
+
 import glob
 import os
 import sys

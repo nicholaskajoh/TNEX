@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+'''
+Stream video from vehicle-mounted stereo camera to cam_left and cam_right channels, and video from 3rd-person view cam to cam_top.
+'''
+
 import glob
 import os
 import sys
