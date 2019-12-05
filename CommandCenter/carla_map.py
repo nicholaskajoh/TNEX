@@ -15,13 +15,35 @@ except IndexError:
 
 import carla
 from matplotlib import pyplot as plt
+import matplotlib.animation as animation
 
 import time
 import networkx as nx
 import numpy as np
+import redis
+import pickle
+
+
+try:
+    r = redis.Redis()
+except redis.ConnectionError as e:
+    print(e)
 
 
 def main():
+    # subscribe to transform channel to get vehicle position
+    p = r.pubsub()
+
+    transform = None
+    def carla_transform_handler(message):
+        nonlocal transform
+        if message and type(message['data']) is not int:
+            transform = pickle.loads(message['data'])
+
+    p.subscribe(**{'carla_transform': carla_transform_handler})
+    p.run_in_thread(sleep_time=0.001)
+
+    # get CARLA map waypoints
     client = carla.Client('localhost', 2000)
     client.set_timeout(5.0)
 
@@ -30,6 +52,7 @@ def main():
     carla_map = world.get_map()
     topology = carla_map.get_topology()
 
+    # create graph from waypoints
     G = nx.DiGraph()
 
     for waypoint_pair in topology:
@@ -42,14 +65,24 @@ def main():
         G.add_node(w1.id, position=w1_2d_loc)
         G.add_edge(w0.id, w1.id, weight=dist)
 
+    # plot graph
     node_pos = nx.get_node_attributes(G, 'position')
 
-    _, ax = plt.subplots(figsize=(12, 8))
-    plt.title('CARLA Map')
-    nx.draw(G, node_pos, node_size=10)
-    ax.set_axis_on()
-    ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
-    plt.grid('on')
+    fig, ax = plt.subplots(figsize=(12, 8))
+
+    def animate(i):
+        ax.clear()
+
+        nx.draw(G, node_pos, node_size=10)
+        ax.set_axis_on()
+        ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
+        plt.title('CARLA Map')
+        plt.grid('on')
+
+        if transform is not None:
+            ax.plot(transform['location']['x'], transform['location']['y'], color='red', marker='o', markersize=10)
+
+    ani = animation.FuncAnimation(fig, animate, interval=500)
     plt.show()
 
 if __name__ == '__main__':
