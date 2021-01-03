@@ -2,4 +2,3 @@ build/
 devel/
 logs/
 .DS_Store
-experiments/ros/catkin_ws/src/ros_essentials_cpp

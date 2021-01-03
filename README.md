@@ -1,20 +1,49 @@
 # TNEX [WIP]
-TNEX is a program that can drive a vehicle in the [CARLA simulator](https://carla.org). It employs similar techniques used in state-of-the-art self-driving cars, howbeit with much simpler algorithms. The goal is to build an autonomous vehicle that can successfully traverse a road network to get from one point to another, and to learn how driverless cars work by having a feel for what it takes to build one.
+TNEX is a program that can drive a vehicle in the [CARLA simulator](https://carla.org). It employs similar techniques used in state-of-the-art self-driving cars, howbeit with much simpler algorithms. The goal of this project is to learn how autonomous vehicles work by building one.
 
-TNEX consists of 2 parts:
-- __Driver:__ Code that runs on the car for sensing, processing and actuation.
-- __Mission Control:__ Web-based UI and server for inspecting telemetry and sending commands to the vehicle.
-
-## Driver
-
+## Architecture
 ![](components.jpg)
-
-## Mission Control
-...
 
 ## Setup
 ### CARLA
-...
+- Download CARLA https://github.com/carla-simulator/carla/releases
+
+- Run CARLA
+```sh
+./CarlaUE4.sh -opengl -quality-level=Low -fps=10
+```
 
 ### ROS
-...
+- Install ROS Melodic http://wiki.ros.org/melodic/Installation/Ubuntu
+
+- Change workspace
+```sh
+cd path/to/tnex
+source `pwd`/devel/setup.bash # save this in your ~/.bashrc
+```
+
+- Install Rosbridge
+```sh
+sudo apt-get install ros-melodic-rosbridge-suite
+```
+
+- Build TNEX
+```sh
+catkin_make
+```
+
+- Run TNEX
+```
+roslaunch tnex_driver main.launch
+```
+
+### Webviz
+- Pull Docker image
+```sh
+docker pull cruise/webviz
+```
+
+- Run Webviz
+```sh
+docker run --name tnex-webviz -p 8080:8080 cruise/webviz
+```
