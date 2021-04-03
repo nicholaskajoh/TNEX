@@ -2,6 +2,17 @@
 
 """Spawn ego vehicle with sensors and publish sensor data in ROS"""
 
+import glob
+import sys
+import os
+try:
+    sys.path.append(glob.glob('/opt/carla-simulator/PythonAPI/carla/dist/carla-*%d.%d-%s.egg' % (
+        sys.version_info.major,
+        sys.version_info.minor,
+        'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
+except IndexError:
+    pass
+
 import random
 import carla
 import rospy
@@ -12,6 +23,12 @@ from cv_bridge import CvBridge, CvBridgeError
 
 rospy.init_node('simulator_ego_vehicle')
 cv_bridge = CvBridge()
+
+ego_vehicle = None
+camera_main_rgb = None
+camera_main_semantic_segmentation = None
+camera_main_depth = None
+camera_3pv_rgb = None # 3rd person view for observation and monitoring
 
 def get_cv_image(carla_image):
     cv_image = np.frombuffer(carla_image.raw_data, dtype=np.dtype("uint8"))
@@ -43,90 +60,90 @@ def publish_image_and_viz(carla_image, topic, camera_type):
         carla_image.convert(carla.ColorConverter.Depth)
     publish_image(carla_image, topic + '_viz')
 
-def main():
-    ego_vehicle = None
-    camera_main_rgb = None
-    camera_main_semantic_segmentation = None
-    camera_main_depth = None
-    camera_3pv_rgb = None # 3rd person view for observation and monitoring
+def create():
+    global ego_vehicle
+    global camera_main_rgb
+    global camera_main_semantic_segmentation
+    global camera_main_depth
+    global camera_3pv_rgb
 
-    try:
-        # create simulator client
-        client = carla.Client('localhost', 2000)
-        client.set_timeout(15.0)
+    # create simulator client
+    client = carla.Client('localhost', 2000)
+    client.set_timeout(15.0)
 
-        # get simulator world
-        world = client.get_world()
+    # get simulator world
+    world = client.get_world()
 
-        blueprint_library = world.get_blueprint_library()
+    blueprint_library = world.get_blueprint_library()
 
-        # spawn vehicle
-        vehicle_blueprint = blueprint_library.find('vehicle.mercedesccc.mercedesccc') # https://carla.readthedocs.io/en/latest/bp_library/#vehicle
-        vehicle_blueprint.set_attribute('role_name', 'ego_vehicle')
-        if vehicle_blueprint.has_attribute('color'):
-            color = random.choice(vehicle_blueprint.get_attribute('color').recommended_values)
-            vehicle_blueprint.set_attribute('color', color)
-        vehicle_transform = random.choice(world.get_map().get_spawn_points())
-        ego_vehicle = world.spawn_actor(vehicle_blueprint, vehicle_transform)
-        ego_vehicle.set_autopilot(False)
-        
-        def create_camera_blueprint(role_name, blueprint, fov):
-            camera_blueprint = blueprint_library.find(blueprint)
-            camera_blueprint.set_attribute('role_name', role_name)
-            camera_blueprint.set_attribute('image_size_x', '720')
-            camera_blueprint.set_attribute('image_size_y', '480')
-            camera_blueprint.set_attribute('fov', fov) # sensor field of view
-            camera_blueprint.set_attribute('sensor_tick', '0.1') # time in seconds between sensor captures
-            return camera_blueprint
+    # spawn vehicle
+    vehicle_blueprint = blueprint_library.find('vehicle.mercedesccc.mercedesccc') # https://carla.readthedocs.io/en/latest/bp_library/#vehicle
+    vehicle_blueprint.set_attribute('role_name', 'ego_vehicle')
+    if vehicle_blueprint.has_attribute('color'):
+        color = random.choice(vehicle_blueprint.get_attribute('color').recommended_values)
+        vehicle_blueprint.set_attribute('color', color)
+    vehicle_transform = random.choice(world.get_map().get_spawn_points())
+    ego_vehicle = world.spawn_actor(vehicle_blueprint, vehicle_transform)
+    ego_vehicle.set_autopilot(False)
+    
+    def create_camera_blueprint(role_name, blueprint, fov):
+        camera_blueprint = blueprint_library.find(blueprint)
+        camera_blueprint.set_attribute('role_name', role_name)
+        camera_blueprint.set_attribute('image_size_x', '720')
+        camera_blueprint.set_attribute('image_size_y', '480')
+        camera_blueprint.set_attribute('fov', fov) # sensor field of view
+        camera_blueprint.set_attribute('sensor_tick', '0.1') # time in seconds between sensor captures
+        return camera_blueprint
 
-        camera_main_rgb_blueprint = create_camera_blueprint('ego_vehicle_camera_main_rgb', 'sensor.camera.rgb', '120')
-        camera_main_semantic_segmentation_blueprint = create_camera_blueprint(
-            'ego_vehicle_camera_main_semantic_segmentation', 'sensor.camera.semantic_segmentation', '120'
-        )
-        camera_main_depth_blueprint = create_camera_blueprint('ego_vehicle_camera_main_depth', 'sensor.camera.depth', '120')
-        camera_3pv_rgb_blueprint = create_camera_blueprint('ego_vehicle_camera_3pv_rgb', 'sensor.camera.rgb', '90')
+    camera_main_rgb_blueprint = create_camera_blueprint('ego_vehicle_camera_main_rgb', 'sensor.camera.rgb', '120')
+    camera_main_semantic_segmentation_blueprint = create_camera_blueprint(
+        'ego_vehicle_camera_main_semantic_segmentation', 'sensor.camera.semantic_segmentation', '120'
+    )
+    camera_main_depth_blueprint = create_camera_blueprint('ego_vehicle_camera_main_depth', 'sensor.camera.depth', '120')
+    camera_3pv_rgb_blueprint = create_camera_blueprint('ego_vehicle_camera_3pv_rgb', 'sensor.camera.rgb', '90')
 
-        # location: https://carla.readthedocs.io/en/latest/python_api/#carlalocationcarlavector3d-class
-        # rotation: https://carla.readthedocs.io/en/latest/python_api/#carlarotation-class
-        camera_main_transform = carla.Transform(carla.Location(x=0.5, y=0, z=2), carla.Rotation(pitch=0, yaw=0, roll=0))
-        camera_3pv_transform = carla.Transform(carla.Location(x=-8, y=0, z=4), carla.Rotation(pitch=-15, yaw=0, roll=0))
+    # location: https://carla.readthedocs.io/en/latest/python_api/#carlalocationcarlavector3d-class
+    # rotation: https://carla.readthedocs.io/en/latest/python_api/#carlarotation-class
+    camera_main_transform = carla.Transform(carla.Location(x=0.5, y=0, z=2), carla.Rotation(pitch=0, yaw=0, roll=0))
+    camera_3pv_transform = carla.Transform(carla.Location(x=-8, y=0, z=4), carla.Rotation(pitch=-15, yaw=0, roll=0))
 
-        camera_main_rgb = world.spawn_actor(camera_main_rgb_blueprint, camera_main_transform, attach_to=ego_vehicle)
-        camera_main_semantic_segmentation = world.spawn_actor(camera_main_semantic_segmentation_blueprint, camera_main_transform, attach_to=ego_vehicle)
-        camera_main_depth = world.spawn_actor(camera_main_depth_blueprint, camera_main_transform, attach_to=ego_vehicle)
-        camera_3pv_rgb = world.spawn_actor(camera_3pv_rgb_blueprint, camera_3pv_transform, attach_to=ego_vehicle)
+    camera_main_rgb = world.spawn_actor(camera_main_rgb_blueprint, camera_main_transform, attach_to=ego_vehicle)
+    camera_main_semantic_segmentation = world.spawn_actor(camera_main_semantic_segmentation_blueprint, camera_main_transform, attach_to=ego_vehicle)
+    camera_main_depth = world.spawn_actor(camera_main_depth_blueprint, camera_main_transform, attach_to=ego_vehicle)
+    camera_3pv_rgb = world.spawn_actor(camera_3pv_rgb_blueprint, camera_3pv_transform, attach_to=ego_vehicle)
 
-        rospy.loginfo('Ego vehicle and sensors spawned')
+    rospy.loginfo('Ego vehicle and sensors spawned')
 
-        camera_main_rgb.listen(lambda carla_image: publish_image(carla_image, 'camera_main_rgb'))
-        camera_main_semantic_segmentation.listen(
-            lambda carla_image: publish_image_and_viz(carla_image, 'camera_main_semantic_segmentation', 'semantic_segmentation')
-        )
-        camera_main_depth.listen(lambda carla_image: publish_image_and_viz(carla_image, 'camera_main_depth', 'depth'))
-        camera_3pv_rgb.listen(lambda carla_image: publish_image(carla_image, 'camera_3pv_rgb'))
+    camera_main_rgb.listen(lambda carla_image: publish_image(carla_image, 'camera_main_rgb'))
+    camera_main_semantic_segmentation.listen(
+        lambda carla_image: publish_image_and_viz(carla_image, 'camera_main_semantic_segmentation', 'semantic_segmentation')
+    )
+    camera_main_depth.listen(lambda carla_image: publish_image_and_viz(carla_image, 'camera_main_depth', 'depth'))
+    camera_3pv_rgb.listen(lambda carla_image: publish_image(carla_image, 'camera_3pv_rgb'))
 
-        while True:
-            world.wait_for_tick()
+    rospy.spin()
 
-    finally:
-        if ego_vehicle is not None:
-            ego_vehicle.destroy()
-        if camera_main_rgb is not None:
-            camera_main_rgb.destroy()
-        if camera_main_semantic_segmentation is not None:
-            camera_main_semantic_segmentation.destroy()
-        if camera_main_depth is not None:
-            camera_main_depth.destroy()
-        if camera_3pv_rgb is not None:
-            camera_3pv_rgb.destroy()
-        rospy.loginfo('Ego vehicle and sensors destroyed')
+def destroy():
+    global ego_vehicle
+    global camera_main_rgb
+    global camera_main_semantic_segmentation
+    global camera_main_depth
+    global camera_3pv_rgb
 
+    if ego_vehicle is not None:
+        ego_vehicle.destroy()
+    if camera_main_rgb is not None:
+        camera_main_rgb.destroy()
+    if camera_main_semantic_segmentation is not None:
+        camera_main_semantic_segmentation.destroy()
+    if camera_main_depth is not None:
+        camera_main_depth.destroy()
+    if camera_3pv_rgb is not None:
+        camera_3pv_rgb.destroy()
+    rospy.loginfo('Ego vehicle and sensors destroyed')
 
-if __name__ == '__main__':
-
-    try:
-        main()
-    except KeyboardInterrupt:
-        pass
-    finally:
-        print('\ndone.')
+try:
+    rospy.on_shutdown(destroy)
+    create()
+except Exception as e:
+    rospy.logerr('Error occured: ' + str(e))

@@ -1,17 +1,17 @@
 <launch>
     <param name="host" value="127.0.0.1" />
     <param name="port" value="2000" />
-    <param name="number_of_vehicles" value="15" />
-    <param name="number_of_walkers" value="30" />
+    <param name="number_of_vehicles" value="30" />
+    <param name="number_of_walkers" value="15" />
     <param name="safe" value="0" />
     <param name="filterv" value="vehicle.*" />
     <param name="filterw" value="walker.pedestrian.*" />
-    <param name="tm_port" value="8000" />
+    <param name="tm_port" value="8001" />
     <param name="sync" value="0" />
     <param name="hybrid" value="0" />
     <param name="seed" value="5" />
     <param name="car_lights_on" value="0" />
 
-    <node pkg="tnex_driver" type="spawn_npcs.py" name="spawn_npcs"/>
-    <node pkg="tnex_driver" type="ego_vehicle.py" name="ego_vehicle"/>
+    <node pkg="tnex_driver" type="spawn_npcs.py" name="spawn_npcs" output="screen"/>
+    <node pkg="tnex_driver" type="ego_vehicle.py" name="ego_vehicle" output="screen"/>
 </launch>
