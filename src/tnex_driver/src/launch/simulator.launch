@@ -13,5 +13,6 @@
     <param name="car_lights_on" value="0" />
 
     <node pkg="tnex_driver" type="spawn_npcs.py" name="spawn_npcs" output="screen"/>
-    <node pkg="tnex_driver" type="ego_vehicle.py" name="ego_vehicle" output="screen"/>
+    <node pkg="tnex_driver" type="spawn_ego_vehicle.py" name="spawn_ego_vehicle" output="screen"/>
+    <node pkg="tnex_driver" type="control_ego_vehicle.py" name="control_ego_vehicle" output="screen"/>
 </launch>

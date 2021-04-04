@@ -25,7 +25,7 @@ import carla
 from carla import VehicleLightState as vls
 import rospy
 
-rospy.init_node('simulator_spawn_npcs')
+rospy.init_node('sim_spawn_npcs')
 
 param_host = rospy.get_param('host')
 param_port = int(rospy.get_param('port'))

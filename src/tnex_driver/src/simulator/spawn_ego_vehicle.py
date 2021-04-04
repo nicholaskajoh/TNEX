@@ -21,7 +21,7 @@ import cv2
 import numpy as np
 from cv_bridge import CvBridge, CvBridgeError
 
-rospy.init_node('simulator_ego_vehicle')
+rospy.init_node('sim_spawn_ego_vehicle')
 cv_bridge = CvBridge()
 
 ego_vehicle = None
@@ -31,7 +31,7 @@ camera_main_depth = None
 camera_3pv_rgb = None # 3rd person view for observation and monitoring
 
 def get_cv_image(carla_image):
-    cv_image = np.frombuffer(carla_image.raw_data, dtype=np.dtype("uint8"))
+    cv_image = np.frombuffer(carla_image.raw_data, dtype=np.dtype('uint8'))
     cv_image = np.reshape(cv_image, (carla_image.height, carla_image.width, 4))
     cv_image = cv_image[:, :, :3]
     cv_image = cv_image[:, :, ::-1]
@@ -68,7 +68,9 @@ def create():
     global camera_3pv_rgb
 
     # create simulator client
-    client = carla.Client('localhost', 2000)
+    param_host = rospy.get_param('host')
+    param_port = int(rospy.get_param('port'))
+    client = carla.Client(param_host, param_port)
     client.set_timeout(15.0)
 
     # get simulator world

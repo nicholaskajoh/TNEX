@@ -12,7 +12,7 @@ TNEX is a program that can drive a vehicle in the [CARLA simulator](https://carl
 - Run CARLA
 ```sh
 cd /opt/carla-simulator
-./CarlaUE4.sh -opengl
+./CarlaUE4.sh -opengl -fps=30
 ```
 
 ### ROS
@@ -45,7 +45,8 @@ pip install \
     service_identity \
     tornado \
     pymongo \
-    pillow
+    pillow \
+    pygame
 ```
 
 - Run TNEX
