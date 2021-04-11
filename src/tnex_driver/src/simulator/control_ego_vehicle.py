@@ -26,9 +26,8 @@ ego_vehicle = None
 
 def apply_control(data):
     global ego_vehicle
-    
-    reverse = True if data.reverse == 1 else False
-    control = carla.VehicleControl(throttle=data.throttle, steer=data.steer, brake=data.brake, reverse=reverse)
+
+    control = carla.VehicleControl(throttle=data.throttle, steer=data.steer, brake=data.brake, reverse=data.reverse)
     ego_vehicle.apply_control(control)
 
 def main():

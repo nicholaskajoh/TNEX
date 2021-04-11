@@ -1,0 +1,4 @@
+tnex_driver/Vector3D location
+float64 latitude
+float64 longitude
+float64 altitude

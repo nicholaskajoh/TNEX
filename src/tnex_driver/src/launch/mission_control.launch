@@ -1,3 +1,4 @@
 <launch>
     <node pkg="tnex_driver" type="third_person_viewer.py" name="third_person_viewer" output="screen"/>
+    <node pkg="tnex_driver" type="map_viewer.py" name="map_viewer" output="screen"/>
 </launch>

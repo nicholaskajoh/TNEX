@@ -35,7 +35,8 @@ source `pwd`/devel/setup.bash # save this in your ~/.bashrc
 sudo apt install \
     ros-noetic-rosbridge-suite \
     ros-noetic-cv-bridge \
-    ros-noetic-ros-numpy
+    ros-noetic-ros-numpy \
+    python3.7-tk # or python3-tk
 pip install \
     opencv-python \
     roslibpy \
@@ -46,7 +47,10 @@ pip install \
     tornado \
     pymongo \
     pillow \
-    pygame
+    pygame \
+    redis \
+    matplotlib \
+    networkx
 ```
 
 - Run TNEX

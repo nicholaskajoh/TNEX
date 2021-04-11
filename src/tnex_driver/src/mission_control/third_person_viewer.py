@@ -18,7 +18,7 @@ cv_bridge = CvBridge()
 throttle = 0.0
 steer = 0.0
 brake = 0.0
-reverse = 0 # bool
+reverse = False
 
 pygame.init()
 pygame.font.init()
@@ -55,7 +55,7 @@ def send_controls(pub):
         steer = 0.0
 
     if keys[K_r]:
-        reverse = 0 if reverse == 1 else 1
+        reverse = False if reverse else True
 
     pygame.event.pump()
 

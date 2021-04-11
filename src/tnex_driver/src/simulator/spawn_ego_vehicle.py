@@ -17,11 +17,13 @@ import random
 import carla
 import rospy
 from sensor_msgs.msg import Image
+from tnex_driver.msg import GNSSMeasurement
 import cv2
 import numpy as np
 from cv_bridge import CvBridge, CvBridgeError
 
 rospy.init_node('sim_spawn_ego_vehicle')
+gnss_publisher = rospy.Publisher('gnss', GNSSMeasurement, queue_size=10)
 cv_bridge = CvBridge()
 
 ego_vehicle = None
@@ -29,6 +31,8 @@ camera_main_rgb = None
 camera_main_semantic_segmentation = None
 camera_main_depth = None
 camera_3pv_rgb = None # 3rd person view for observation and monitoring
+gnss = None
+imu = None
 
 def get_cv_image(carla_image):
     cv_image = np.frombuffer(carla_image.raw_data, dtype=np.dtype('uint8'))
@@ -60,12 +64,27 @@ def publish_image_and_viz(carla_image, topic, camera_type):
         carla_image.convert(carla.ColorConverter.Depth)
     publish_image(carla_image, topic + '_viz')
 
+def publish_gnss_measurements(carla_gnss_measurement):
+    msg = GNSSMeasurement()
+    msg.location.x = carla_gnss_measurement.transform.location.x
+    msg.location.y = carla_gnss_measurement.transform.location.y
+    msg.location.z = carla_gnss_measurement.transform.location.z
+    msg.latitude = carla_gnss_measurement.latitude
+    msg.longitude = carla_gnss_measurement.longitude
+    msg.altitude = carla_gnss_measurement.altitude
+    try:
+        gnss_publisher.publish(msg)
+    except rospy.ROSInterruptException as e:
+        rospy.logerr(e)
+
 def create():
     global ego_vehicle
     global camera_main_rgb
     global camera_main_semantic_segmentation
     global camera_main_depth
     global camera_3pv_rgb
+    global gnss
+    global imu
 
     # create simulator client
     param_host = rospy.get_param('host')
@@ -114,6 +133,14 @@ def create():
     camera_main_depth = world.spawn_actor(camera_main_depth_blueprint, camera_main_transform, attach_to=ego_vehicle)
     camera_3pv_rgb = world.spawn_actor(camera_3pv_rgb_blueprint, camera_3pv_transform, attach_to=ego_vehicle)
 
+    gnss_blueprint = blueprint_library.find('sensor.other.gnss')
+    gnss_transform = carla.Transform(carla.Location(x=0, y=0, z=0), carla.Rotation(pitch=0, yaw=0, roll=0))
+    gnss = world.spawn_actor(gnss_blueprint, gnss_transform, attach_to=ego_vehicle)
+
+    imu_blueprint = blueprint_library.find('sensor.other.imu')
+    imu_transform = carla.Transform(carla.Location(x=0, y=0, z=0), carla.Rotation(pitch=0, yaw=0, roll=0))
+    imu = world.spawn_actor(imu_blueprint, imu_transform, attach_to=ego_vehicle)
+
     rospy.loginfo('Ego vehicle and sensors spawned')
 
     camera_main_rgb.listen(lambda carla_image: publish_image(carla_image, 'camera_main_rgb'))
@@ -122,6 +149,7 @@ def create():
     )
     camera_main_depth.listen(lambda carla_image: publish_image_and_viz(carla_image, 'camera_main_depth', 'depth'))
     camera_3pv_rgb.listen(lambda carla_image: publish_image(carla_image, 'camera_3pv_rgb'))
+    gnss.listen(publish_gnss_measurements)
 
     rospy.spin()
 
@@ -132,8 +160,6 @@ def destroy():
     global camera_main_depth
     global camera_3pv_rgb
 
-    if ego_vehicle is not None:
-        ego_vehicle.destroy()
     if camera_main_rgb is not None:
         camera_main_rgb.destroy()
     if camera_main_semantic_segmentation is not None:
@@ -142,6 +168,12 @@ def destroy():
         camera_main_depth.destroy()
     if camera_3pv_rgb is not None:
         camera_3pv_rgb.destroy()
+    if gnss is not None:
+        gnss.destroy()
+    if imu is not None:
+        imu.destroy()
+    if ego_vehicle is not None:
+        ego_vehicle.destroy()
     rospy.loginfo('Ego vehicle and sensors destroyed')
 
 try:
