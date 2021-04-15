@@ -3,3 +3,4 @@ devel/
 logs/
 install/
 .DS_Store
+*.pyc

@@ -1,24 +1,16 @@
 #!/usr/bin/env python
 
 import pygame
-from pygame.locals import K_RIGHT
-from pygame.locals import K_LEFT
-from pygame.locals import K_UP
-from pygame.locals import K_DOWN
-from pygame.locals import K_r
 
 import rospy
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
-from tnex_driver.msg import VehicleControl
+
+import manual_mode
 
 rospy.init_node('mctrl_3pviewer')
 
 cv_bridge = CvBridge()
-throttle = 0.0
-steer = 0.0
-brake = 0.0
-reverse = False
 
 pygame.init()
 pygame.font.init()
@@ -27,44 +19,6 @@ display_scale = (720, 480)
 display = pygame.display.set_mode(display_scale)
 clock = pygame.time.Clock()
 pygame.display.set_caption('Third-person Viewer')
-
-
-def send_controls(pub):
-    global throttle
-    global steer
-    global brake
-    global reverse
-
-    keys = pygame.key.get_pressed()
-
-    if keys[K_UP]:
-        throttle = 0.5
-    else:
-        throttle = 0.0
-
-    if keys[K_DOWN]:
-        brake = 1.0
-    else:
-        brake = 0.0
-
-    if keys[K_LEFT]:
-        steer = -0.25
-    elif keys[K_RIGHT]:
-        steer = 0.25
-    else:
-        steer = 0.0
-
-    if keys[K_r]:
-        reverse = False if reverse else True
-
-    pygame.event.pump()
-
-    msg = VehicleControl()
-    msg.throttle = throttle
-    msg.steer = steer
-    msg.brake = brake
-    msg.reverse = reverse
-    pub.publish(msg)
 
 def show_3pv(image):
     try:
@@ -77,10 +31,9 @@ def show_3pv(image):
 
 def start():
     rospy.Subscriber('camera_3pv_rgb', Image, show_3pv)
-    pub = rospy.Publisher('vehicle_control', VehicleControl, queue_size=10)
 
     while not rospy.is_shutdown():
-        send_controls(pub)
+        manual_mode.send_controls()
 
         pygame.display.flip()
         clock.tick(30)
