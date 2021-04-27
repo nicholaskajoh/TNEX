@@ -15,7 +15,7 @@ steer = 0.0
 brake = 0.0
 reverse = False
 
-def send_controls():
+def send_vehicle_controls():
     global throttle
     global steer
     global brake
