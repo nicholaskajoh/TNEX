@@ -27,7 +27,7 @@ catkin_make
 
 - Change workspace
 ```sh
-source `pwd`/devel/setup.bash # save this in your ~/.bashrc
+source ./devel/setup.bash # you may save this in your ~/.bashrc
 ```
 
 - Install dependencies
@@ -37,20 +37,8 @@ sudo apt install \
     ros-noetic-cv-bridge \
     ros-noetic-ros-numpy \
     python3.7-tk # or python3-tk
-pip install \
-    opencv-python \
-    roslibpy \
-    pyyaml \
-    rospkg \
-    pyopenssl \
-    service_identity \
-    tornado \
-    pymongo \
-    pillow \
-    pygame \
-    redis \
-    matplotlib \
-    networkx
+mkvirtualenv -p python3.7 tnex # optional (PS: have virtualenv wrapper installed)
+pip install -r requirements.txt
 ```
 
 - Run TNEX
