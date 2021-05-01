@@ -24,7 +24,7 @@ def send_vehicle_controls():
     keys = pygame.key.get_pressed()
 
     if keys[K_UP]:
-        throttle = 0.5
+        throttle = 1.0
     else:
         throttle = 0.0
 
@@ -34,9 +34,9 @@ def send_vehicle_controls():
         brake = 0.0
 
     if keys[K_LEFT]:
-        steer = -0.25
+        steer = -1.0
     elif keys[K_RIGHT]:
-        steer = 0.25
+        steer = 1.0
     else:
         steer = 0.0
 

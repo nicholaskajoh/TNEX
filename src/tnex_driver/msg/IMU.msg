@@ -1,0 +1,3 @@
+tnex_driver/Vector3D accelerometer
+tnex_driver/Vector3D gyroscope
+float64 compass

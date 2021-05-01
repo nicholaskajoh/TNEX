@@ -52,6 +52,7 @@ add_message_files(
   VehicleControl.msg
   Vector3D.msg
   GNSSMeasurement.msg
+  IMU.msg
 )
 
 ## Generate services in the 'srv' folder

@@ -17,13 +17,14 @@ import random
 import carla
 import rospy
 from sensor_msgs.msg import Image
-from tnex_driver.msg import GNSSMeasurement
+from tnex_driver.msg import GNSSMeasurement, IMU
 import cv2
 import numpy as np
 from cv_bridge import CvBridge, CvBridgeError
 
 rospy.init_node('sim_spawn_ego_vehicle')
 gnss_publisher = rospy.Publisher('gnss', GNSSMeasurement, queue_size=10)
+imu_publisher = rospy.Publisher('imu', IMU, queue_size=10)
 cv_bridge = CvBridge()
 
 ego_vehicle = None
@@ -74,6 +75,20 @@ def publish_gnss_measurements(carla_gnss_measurement):
     msg.altitude = carla_gnss_measurement.altitude
     try:
         gnss_publisher.publish(msg)
+    except rospy.ROSInterruptException as e:
+        rospy.logerr(e)
+
+def publish_imu_measurements(carla_imu_measurement):
+    msg = IMU()
+    msg.accelerometer.x = carla_imu_measurement.accelerometer.x
+    msg.accelerometer.y = carla_imu_measurement.accelerometer.y
+    msg.accelerometer.z = carla_imu_measurement.accelerometer.z
+    msg.gyroscope.x = carla_imu_measurement.gyroscope.x
+    msg.gyroscope.y = carla_imu_measurement.gyroscope.y
+    msg.gyroscope.z = carla_imu_measurement.gyroscope.z
+    msg.compass = carla_imu_measurement.compass
+    try:
+        imu_publisher.publish(msg)
     except rospy.ROSInterruptException as e:
         rospy.logerr(e)
 
@@ -150,6 +165,7 @@ def create():
     camera_main_depth.listen(lambda carla_image: publish_image_and_viz(carla_image, 'camera_main_depth', 'depth'))
     camera_3pv_rgb.listen(lambda carla_image: publish_image(carla_image, 'camera_3pv_rgb'))
     gnss.listen(publish_gnss_measurements)
+    imu.listen(publish_imu_measurements)
 
     rospy.spin()
 
