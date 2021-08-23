@@ -7,7 +7,7 @@ try:
 except redis.ConnectionError as e:
     rospy.logerr(e)
 
-def clear_vehicle_storage():
+def clear_vehicle_state():
     for key in r.scan_iter('tnex_driver:*'):
         r.delete(key)
-    rospy.loginfo('Vehicle storage cleared.')
+    rospy.loginfo('Vehicle state cleared.')

@@ -5,6 +5,7 @@ setup_args = generate_distutils_setup(
     packages=[
         'mission_control',
         'planner',
+        'sensors',
     ],
 	package_dir={'': 'lib'}
 )

@@ -9,12 +9,13 @@ import numpy as np
 import rospy
 import planner
 import mission_control
+from sensors import map, gnss, imu
 
 
 rospy.init_node('mctrl_map_viewer')
 matplotlib.use('TkAgg')
 
-G = planner.get_map_graph()
+G = map.get_map_graph()
 
 # plot graph
 fig, ax = plt.subplots(figsize=(12, 8))
@@ -34,7 +35,7 @@ def get_plots():
     plots.extend([nodes_plot, *edges_plot])
 
     # ego vehicle
-    ego_vehicle_location = planner.get_ego_vehicle_location()
+    ego_vehicle_location = gnss.get_ego_vehicle_location()
     if ego_vehicle_location is not None:
         # location
         ev_pos_plot = ax.plot(ego_vehicle_location.x, ego_vehicle_location.y, color='green', marker='o', markersize=10)
@@ -45,9 +46,9 @@ def get_plots():
         map_north_text_plot = ax.text(ego_vehicle_location.x - 3, ego_vehicle_location.y + arrow_length + 2, 'N', color='green')
         plots.extend([*ev_pos_plot, map_north_plot, map_north_text_plot])
 
-        heading = planner.get_ego_vehicle_heading()
+        heading = imu.get_ego_vehicle_heading()
         if heading:
-            [heading_in_degrees, dx, dy] = planner.get_ego_vehicle_map_heading(heading, arrow_length)
+            [heading_in_degrees, dx, dy] = imu.get_ego_vehicle_map_heading(heading, arrow_length)
             ev_heading_plot = ax.arrow(ego_vehicle_location.x, ego_vehicle_location.y, dx, dy, length_includes_head=True, head_width=5, color='green')
             ev_heading_text_plot = ax.text(ego_vehicle_location.x + dx, ego_vehicle_location.y + dy, str(round(heading_in_degrees, 2)) + '°', color='green')
             plots.extend([ev_heading_plot, ev_heading_text_plot])
@@ -69,7 +70,7 @@ def calc_route(event):
     global node_sizes
     global edge_colors
 
-    ego_vehicle_location = planner.get_ego_vehicle_location()
+    ego_vehicle_location = gnss.get_ego_vehicle_location()
     if ego_vehicle_location:
         vehicle_pos = np.array([ego_vehicle_location.x, ego_vehicle_location.y])
         destination_pos = np.array([event.xdata, event.ydata])
@@ -87,7 +88,7 @@ cid = fig.canvas.mpl_connect('button_press_event', calc_route)
 def destroy():
     anim.event_source.stop()
     plt.close('all')
-    mission_control.clear_vehicle_storage()
+    mission_control.clear_vehicle_state()
 
 rospy.on_shutdown(destroy)
 
