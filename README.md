@@ -1,8 +1,8 @@
 # TNEX [WIP]
-TNEX is a program that can drive a vehicle in the [CARLA simulator](https://carla.org). It employs similar techniques used in state-of-the-art self-driving cars, howbeit with much simpler algorithms. The goal of this project is to learn how autonomous vehicles work by building one.
+TNEX is a program that can drive a vehicle in the [CARLA simulator](https://carla.org). It employs similar techniques used in state-of-the-art self-driving cars, howbeit with simpler algorithms. The goal of this project is to learn how autonomous vehicles work by building one.
 
 ## Architecture
-![](components.jpg)
+![](tnex_system_architecture.png)
 
 ## Setup
 > Tested with Python 3.7 and Carla 0.9.11
