@@ -1,2 +1,2 @@
-from .send_vehicle_controls import send_vehicle_controls
+from .send_vehicle_controls import ManualVehicleControl
 from .clear_vehicle_state import clear_vehicle_state

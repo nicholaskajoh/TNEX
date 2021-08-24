@@ -6,7 +6,7 @@ import rospy
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 
-import mission_control
+from mission_control import ManualVehicleControl
 
 rospy.init_node('mctrl_3pviewer')
 
@@ -31,9 +31,10 @@ def show_3pv(image):
 
 def start():
     rospy.Subscriber('camera_3pv_rgb', Image, show_3pv)
+    mvc = ManualVehicleControl()
 
     while not rospy.is_shutdown():
-        mission_control.send_vehicle_controls()
+        mvc.send()
 
         pygame.display.flip()
         clock.tick(30)
