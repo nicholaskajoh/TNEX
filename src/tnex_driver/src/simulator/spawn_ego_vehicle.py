@@ -29,8 +29,7 @@ cv_bridge = CvBridge()
 
 ego_vehicle = None
 camera_main_rgb = None
-camera_main_semantic_segmentation = None
-camera_main_depth = None
+camera_main_sem_seg = None
 camera_3pv_rgb = None # 3rd person view for observation and monitoring
 gnss = None
 imu = None
@@ -58,12 +57,12 @@ def publish_image(carla_image, topic):
 def publish_image_and_viz(carla_image, topic, camera_type):
     publish_image(carla_image, topic)
 
-    # make depth and semantic segmentation images visualizable
+    # make depth and semantic segmentation images usable
     if camera_type == 'semantic_segmentation':
         carla_image.convert(carla.ColorConverter.CityScapesPalette)
     elif camera_type == 'depth':
         carla_image.convert(carla.ColorConverter.Depth)
-    publish_image(carla_image, topic + '_viz')
+    publish_image(carla_image, topic + '_procd')
 
 def publish_gnss_measurements(carla_gnss_measurement):
     msg = GNSSMeasurement()
@@ -95,8 +94,7 @@ def publish_imu_measurements(carla_imu_measurement):
 def create():
     global ego_vehicle
     global camera_main_rgb
-    global camera_main_semantic_segmentation
-    global camera_main_depth
+    global camera_main_sem_seg
     global camera_3pv_rgb
     global gnss
     global imu
@@ -132,10 +130,9 @@ def create():
         return camera_blueprint
 
     camera_main_rgb_blueprint = create_camera_blueprint('ego_vehicle_camera_main_rgb', 'sensor.camera.rgb', '120')
-    camera_main_semantic_segmentation_blueprint = create_camera_blueprint(
-        'ego_vehicle_camera_main_semantic_segmentation', 'sensor.camera.semantic_segmentation', '120'
+    camera_main_sem_seg_blueprint = create_camera_blueprint(
+        'ego_vehicle_camera_main_sem_seg', 'sensor.camera.semantic_segmentation', '120'
     )
-    camera_main_depth_blueprint = create_camera_blueprint('ego_vehicle_camera_main_depth', 'sensor.camera.depth', '120')
     camera_3pv_rgb_blueprint = create_camera_blueprint('ego_vehicle_camera_3pv_rgb', 'sensor.camera.rgb', '90')
 
     # location: https://carla.readthedocs.io/en/latest/python_api/#carlalocationcarlavector3d-class
@@ -144,8 +141,7 @@ def create():
     camera_3pv_transform = carla.Transform(carla.Location(x=-8, y=0, z=4), carla.Rotation(pitch=-15, yaw=0, roll=0))
 
     camera_main_rgb = world.spawn_actor(camera_main_rgb_blueprint, camera_main_transform, attach_to=ego_vehicle)
-    camera_main_semantic_segmentation = world.spawn_actor(camera_main_semantic_segmentation_blueprint, camera_main_transform, attach_to=ego_vehicle)
-    camera_main_depth = world.spawn_actor(camera_main_depth_blueprint, camera_main_transform, attach_to=ego_vehicle)
+    camera_main_sem_seg = world.spawn_actor(camera_main_sem_seg_blueprint, camera_main_transform, attach_to=ego_vehicle)
     camera_3pv_rgb = world.spawn_actor(camera_3pv_rgb_blueprint, camera_3pv_transform, attach_to=ego_vehicle)
 
     gnss_blueprint = blueprint_library.find('sensor.other.gnss')
@@ -159,10 +155,9 @@ def create():
     rospy.loginfo('Ego vehicle and sensors spawned')
 
     camera_main_rgb.listen(lambda carla_image: publish_image(carla_image, 'camera_main_rgb'))
-    camera_main_semantic_segmentation.listen(
-        lambda carla_image: publish_image_and_viz(carla_image, 'camera_main_semantic_segmentation', 'semantic_segmentation')
+    camera_main_sem_seg.listen(
+        lambda carla_image: publish_image_and_viz(carla_image, 'camera_main_sem_seg', 'semantic_segmentation')
     )
-    camera_main_depth.listen(lambda carla_image: publish_image_and_viz(carla_image, 'camera_main_depth', 'depth'))
     camera_3pv_rgb.listen(lambda carla_image: publish_image(carla_image, 'camera_3pv_rgb'))
     gnss.listen(publish_gnss_measurements)
     imu.listen(publish_imu_measurements)
@@ -172,16 +167,13 @@ def create():
 def destroy():
     global ego_vehicle
     global camera_main_rgb
-    global camera_main_semantic_segmentation
-    global camera_main_depth
+    global camera_main_sem_seg
     global camera_3pv_rgb
 
     if camera_main_rgb is not None:
         camera_main_rgb.destroy()
-    if camera_main_semantic_segmentation is not None:
-        camera_main_semantic_segmentation.destroy()
-    if camera_main_depth is not None:
-        camera_main_depth.destroy()
+    if camera_main_sem_seg is not None:
+        camera_main_sem_seg.destroy()
     if camera_3pv_rgb is not None:
         camera_3pv_rgb.destroy()
     if gnss is not None:
