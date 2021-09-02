@@ -9,6 +9,7 @@ from tnex_driver.msg import VehicleControl
 from cv_bridge import CvBridge, CvBridgeError
 
 from mission_control import ManualVehicleControl
+from sensors import Speedometer
 from utils import sprites
 
 rospy.init_node('mctrl_3pviewer')
@@ -23,6 +24,8 @@ pygame.display.set_caption('Third-person Viewer')
 sprite_group = pygame.sprite.LayeredUpdates()
 text_layer = 1
 
+telem_txt = sprites.Text('TELEMETRY', (1, 0), sprite_group, text_layer)
+speed_txt = sprites.Text('SPEED: 0 M/S', (1, 15), sprite_group, text_layer)
 threepv_frame = sprites.Image(pygame.surfarray.make_surface(np.zeros(display_scale)), (0, 0), sprite_group, 0)
 ctrls_txt = sprites.Text('CONTROLS', (600, 0), sprite_group, text_layer)
 throttle_txt = sprites.Text('THROTTLE: 0', (600, 15), sprite_group, text_layer)
@@ -50,9 +53,12 @@ def start():
     rospy.Subscriber('vehicle_control', VehicleControl, show_controls)
 
     mvc = ManualVehicleControl()
+    speedometer = Speedometer()
 
     while not rospy.is_shutdown():
         mvc.send()
+
+        speed_txt.updateText('SPEED: ' + str(round(speedometer.get_speed(), 2)) + ' M/S')
 
         sprite_group.update()
         sprite_group.draw(display)

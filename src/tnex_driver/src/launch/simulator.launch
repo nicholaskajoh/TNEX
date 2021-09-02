@@ -15,4 +15,5 @@
     <node pkg="tnex_driver" type="spawn_npcs.py" name="spawn_npcs" output="screen"/>
     <node pkg="tnex_driver" type="spawn_ego_vehicle.py" name="spawn_ego_vehicle" output="screen"/>
     <node pkg="tnex_driver" type="control_ego_vehicle.py" name="control_ego_vehicle" output="screen"/>
+    <node pkg="tnex_driver" type="calculate_speed.py" name="calculate_speed" output="screen"/>
 </launch>
