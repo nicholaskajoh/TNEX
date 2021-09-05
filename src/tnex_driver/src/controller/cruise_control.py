@@ -16,7 +16,6 @@ class CruiseControl:
     steer = 0
     brake = 0
     reverse = 0
-    set_point = 5 # speed in meters per second
 
     def __init__(self):
         rospy.Subscriber('vehicle_control', VehicleControl, self.set_controls)
@@ -31,12 +30,13 @@ class CruiseControl:
 
     def create(self):
         rate = rospy.Rate(self.freq)
-        pid = PID(0.1, 0.01, 0.001)
-        pid.SetPoint = self.set_point
+        pid = PID(0.35, 0.00625, 0.035)
         speedometer = Speedometer()
 
         while not rospy.is_shutdown():
             cc_enabled = bool(int(vehicle_state.get_state('cruise_control_enabled', '0')))
+            target_speed = int(vehicle_state.get_state('cruise_control_target_speed', 0)) # in m/s
+            pid.SetPoint = target_speed
 
             if cc_enabled:
                 speed = speedometer.get_speed()
@@ -45,16 +45,22 @@ class CruiseControl:
 
                 ccd_msg = CruiseControlData()
                 ccd_msg.speed = speed
-                ccd_msg.target_speed = self.set_point
+                ccd_msg.target_speed = target_speed
                 ccd_msg.throttle_brake = throttle_brake
                 self.ccd_pub.publish(ccd_msg)
 
                 # 0 to 1 for throttle and -1 to 0 for brake
                 # so throttle + brake range is 1 to -1
+                if throttle_brake > 1:
+                    throttle_brake = 1
+                if throttle_brake < -1:
+                    throttle_brake = -1
                 if throttle_brake < 0:
                     self.brake = -1 * throttle_brake
+                    self.throttle = 0
                 else:
                     self.throttle = throttle_brake
+                    self.brake = 0
 
                 vc_msg = VehicleControl()
                 vc_msg.throttle = self.throttle

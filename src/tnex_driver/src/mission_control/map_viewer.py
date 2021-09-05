@@ -19,6 +19,7 @@ G = map.get_map_graph()
 
 # plot graph
 fig, ax = plt.subplots(figsize=(12, 8))
+fig.canvas.manager.set_window_title('Map Viewer')
 node_pos = nx.get_node_attributes(G, 'position')
 node_colors = list(nx.get_node_attributes(G, 'color').values())
 node_sizes = list(nx.get_node_attributes(G, 'size').values())
@@ -94,6 +95,5 @@ rospy.on_shutdown(destroy)
 
 ax.set_axis_on()
 ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
-plt.title('Map Viewer')
 plt.grid('on')
 plt.show()

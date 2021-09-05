@@ -21,6 +21,8 @@ class CruiseControlViewer:
         fig.canvas.manager.set_window_title('Cruise Control Viewer')
         self.ax = plt.subplot(2, 1, 1) # vehicle speed plot
         self.ax2 = plt.subplot(2, 1, 2) # vehicle throttle + brake plot
+        self.ax.set_ylim([-1, 15])
+        self.ax2.set_ylim([-1.5, 1.5])
         anim_interval = 100 # ms
         self.anim = animation.FuncAnimation(fig, self.animate_plots, repeat=False, init_func=self.init_plots, blit=True, interval=anim_interval)
         num_plot_points = int(1000 / anim_interval * 60) # we want 60 seconds worth of points
@@ -43,13 +45,14 @@ class CruiseControlViewer:
         plt.close('all')
 
     def get_plots(self):
-        ax_plot = self.ax.plot(self.speeds, color='r', label='Speed (m/s)')
-        ax_plot2 = self.ax.axhline(y=self.target_speed, color='g', label='Target Speed')
-        ax2_plot = self.ax2.plot(self.throttle_brake_vals, color='b', label='Throttle + Brake')
+        speed_plot = self.ax.plot(self.speeds, color='r', label='Speed (m/s)')
+        target_speed_plot = self.ax.axhline(y=self.target_speed, color='g', label='Target Speed')
+        throttle_brake_plot = self.ax2.plot(self.throttle_brake_vals, color='b', label='Throttle + Brake')
+        throttle_brake_boundary_plot = self.ax2.axhline(y=0, color='k')
         self.show_legend(self.ax)
         self.show_legend(self.ax2)
 
-        plots = [*ax_plot, ax_plot2, *ax2_plot]
+        plots = [*speed_plot, target_speed_plot, *throttle_brake_plot, throttle_brake_boundary_plot]
         return plots
 
     def init_plots(self):
