@@ -5,4 +5,5 @@
 
   <include file="$(find tnex_driver)/src/launch/simulator.launch" />
   <include file="$(find tnex_driver)/src/launch/mission_control.launch" />
+  <include file="$(find tnex_driver)/src/launch/controller.launch" />
 </launch>

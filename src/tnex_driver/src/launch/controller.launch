@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="tnex_driver" type="cruise_control.py" name="cruise_control" output="screen"/>
+</launch>

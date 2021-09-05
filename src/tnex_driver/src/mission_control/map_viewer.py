@@ -8,7 +8,7 @@ import networkx as nx
 import numpy as np
 import rospy
 import planner
-import mission_control
+from mission_control import vehicle_state
 from sensors import map, gnss, imu
 
 
@@ -88,7 +88,7 @@ cid = fig.canvas.mpl_connect('button_press_event', calc_route)
 def destroy():
     anim.event_source.stop()
     plt.close('all')
-    mission_control.clear_vehicle_state()
+    vehicle_state.clear()
 
 rospy.on_shutdown(destroy)
 
