@@ -34,7 +34,7 @@ class CruiseControl:
         speedometer = Speedometer()
 
         while not rospy.is_shutdown():
-            cc_enabled = bool(int(vehicle_state.get_state('cruise_control_enabled', '0')))
+            cc_enabled = vehicle_state.get_state('vehicle_mode', 'MANUAL') == 'CRUISE_CONTROL'
             target_speed = int(vehicle_state.get_state('cruise_control_target_speed', 0)) # in m/s
             pid.SetPoint = target_speed
 

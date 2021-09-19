@@ -15,11 +15,11 @@ def listen_for_commands():
 
 
 def toggle_cruise_control(target_speed):
-    enabled = bool(int(get_state('cruise_control_enabled', '0')))
+    enabled = get_state('vehicle_mode', 'MANUAL') == 'CRUISE_CONTROL'
     current_target_speed = int(get_state('cruise_control_target_speed', 0))
     if enabled and target_speed == current_target_speed:
-        set_state('cruise_control_enabled', 0)
+        set_state('vehicle_mode', 'MANUAL')
         set_state('cruise_control_target_speed', 0)
     else:
-        set_state('cruise_control_enabled', 1)
+        set_state('vehicle_mode', 'CRUISE_CONTROL')
         set_state('cruise_control_target_speed', target_speed)

@@ -42,7 +42,7 @@ class ManualVehicleControl:
         self.reverse = vehicle_control.reverse
 
     def send(self):
-        self.cc_enabled = bool(int(get_state('cruise_control_enabled', '0')))
+        self.cc_enabled = get_state('vehicle_mode', 'MANUAL') == 'CRUISE_CONTROL'
 
         new_current_time = time.time()
         time_delta = new_current_time - self.current_time

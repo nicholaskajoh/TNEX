@@ -25,16 +25,21 @@ sprite_group = pygame.sprite.LayeredUpdates()
 text_layer = 1
 
 telem_txt = sprites.Text('TELEMETRY', (1, 0), sprite_group, text_layer)
-speed_txt = sprites.Text('SPEED: 0 M/S', (1, 15), sprite_group, text_layer)
+vmode_txt = sprites.Text('MODE: MANUAL', (1, 15), sprite_group, text_layer)
+speed_txt = sprites.Text('SPEED: 0 M/S', (1, 30), sprite_group, text_layer)
 threepv_frame = sprites.Image(pygame.surfarray.make_surface(np.zeros(display_scale)), (0, 0), sprite_group, 0)
-ctrls_txt = sprites.Text('CONTROLS', (1, 45), sprite_group, text_layer)
-throttle_txt = sprites.Text('THROTTLE: 0', (1, 60), sprite_group, text_layer)
-steer_txt = sprites.Text('STEER: 0', (1, 75), sprite_group, text_layer)
-brake_txt = sprites.Text('BRAKE: 0', (1, 90), sprite_group, text_layer)
-reverse_txt = sprites.Text('REVERSE: 0', (1, 105), sprite_group, text_layer)
-cruise_txt = sprites.Text('CRUISE: 0', (1, 120), sprite_group, text_layer)
-sprites.Text('COMMANDS', (600, 0), sprite_group, text_layer)
-sprites.Text('THROTTLE: UP', (600, 15), sprite_group, text_layer)
+ctrls_txt = sprites.Text('CONTROLS', (1, 60), sprite_group, text_layer)
+throttle_txt = sprites.Text('THROTTLE: 0', (1, 75), sprite_group, text_layer)
+steer_txt = sprites.Text('STEER: 0', (1, 90), sprite_group, text_layer)
+brake_txt = sprites.Text('BRAKE: 0', (1, 105), sprite_group, text_layer)
+reverse_txt = sprites.Text('REVERSE: 0', (1, 120), sprite_group, text_layer)
+sprites.Text('COMMANDS', (450, 0), sprite_group, text_layer)
+sprites.Text('THROTTLE: UP', (450, 15), sprite_group, text_layer)
+sprites.Text('STEER: LEFT, RIGHT', (450, 30), sprite_group, text_layer)
+sprites.Text('BRAKE: DOWN', (450, 45), sprite_group, text_layer)
+sprites.Text('REVERSE TOGGLE: R', (450, 60), sprite_group, text_layer)
+sprites.Text('MANUAL: M', (450, 75), sprite_group, text_layer)
+sprites.Text('CRUISE CONTROL (5, 10): C, V', (450, 90), sprite_group, text_layer)
 
 def show_3pv(image):
     try:
@@ -63,7 +68,7 @@ def start():
         listen_for_commands()
 
         speed_txt.updateText('SPEED: ' + str(round(speedometer.get_speed(), 2)) + ' M/S')
-        cruise_txt.updateText('CRUISE: ' + vehicle_state.get_state('cruise_control_enabled', '0'))
+        vmode_txt.updateText('MODE: ' + vehicle_state.get_state('vehicle_mode', 'MANUAL'))
 
         sprite_group.update()
         sprite_group.draw(display)
