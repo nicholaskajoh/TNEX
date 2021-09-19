@@ -1,0 +1,82 @@
+{
+  "layout": {
+    "first": {
+      "first": "ImageViewPanel!2lnt4j8",
+      "second": {
+        "first": "RawMessages!39dpuqa",
+        "second": {
+          "first": "RawMessages!9t4mp8",
+          "second": "RawMessages!2hjrf10",
+          "direction": "row",
+          "splitPercentage": 49.44881889763777
+        },
+        "direction": "row",
+        "splitPercentage": 32.8752642706131
+      },
+      "direction": "column"
+    },
+    "second": "ImageViewPanel!23am8nd",
+    "direction": "row",
+    "splitPercentage": 49.270833333333336
+  },
+  "savedProps": {
+    "ImageViewPanel!2lnt4j8": {
+      "cameraTopic": "/camera_main_sem_seg_procd",
+      "enabledMarkerTopics": [],
+      "customMarkerTopicOptions": [],
+      "scale": 0.2,
+      "transformMarkers": true,
+      "synchronize": false,
+      "mode": "other",
+      "zoomPercentage": 85.625,
+      "offset": [
+        162.75,
+        -0.5
+      ]
+    },
+    "RawMessages!39dpuqa": {
+      "topicPath": "/gnss",
+      "diffTopicPath": "",
+      "diffMethod": "custom",
+      "diffEnabled": false,
+      "showFullMessageForDiff": false
+    },
+    "RawMessages!9t4mp8": {
+      "topicPath": "/imu",
+      "diffTopicPath": "",
+      "diffMethod": "custom",
+      "diffEnabled": false,
+      "showFullMessageForDiff": false
+    },
+    "RawMessages!2hjrf10": {
+      "topicPath": "/vehicle_control",
+      "diffTopicPath": "",
+      "diffMethod": "custom",
+      "diffEnabled": false,
+      "showFullMessageForDiff": false
+    },
+    "ImageViewPanel!23am8nd": {
+      "cameraTopic": "/camera_3pv_rgb",
+      "enabledMarkerTopics": [],
+      "customMarkerTopicOptions": [],
+      "scale": 0.2,
+      "transformMarkers": true,
+      "synchronize": false,
+      "mode": "fit",
+      "zoomPercentage": 135,
+      "offset": [
+        0,
+        87.5
+      ]
+    }
+  },
+  "globalVariables": {},
+  "userNodes": {},
+  "linkedGlobalVariables": [],
+  "playbackConfig": {
+    "speed": 1,
+    "messageOrder": "receiveTime",
+    "timeDisplayMethod": "ROS"
+  },
+  "version": 17
+}
