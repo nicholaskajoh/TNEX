@@ -1,8 +1,0 @@
-build/
-devel/
-logs/
-install/
-.DS_Store
-*.pyc
-data/rosbags/*
-!data/rosbags/.gitkeep
