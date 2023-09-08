@@ -4,7 +4,7 @@
 cd /opt/carla-simulator/bin/ ./CarlaUE4.sh -RenderOffScreen
 
 # Install Python client.
-pip3 install --upgrade pip
+sudo apt-get -y install python3-pip
 pip3 install carla
 
 # Setup world.
